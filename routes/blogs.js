@@ -9,9 +9,16 @@ router.get('/new', (request, response) => {
 });
 
 //view route
-router.get('/:id', async (request, response) => {
-  response.send(request.params.id);
+router.get('/:slug', async (request, response) => {
+  let blog = await Blog.findOne({ slug: request.params.slug });
+
+  if (blog) {
+    response.render('show', { blog: blog });
+  } else {
+    response.redirect('/');
+  }
 });
+
 //route that handles new post
 router.post('/', async (request, response) => {
   // console.log(request.body);
@@ -24,7 +31,7 @@ router.post('/', async (request, response) => {
   try {
     blog = await blog.save();
 
-    response.redirect(`blogs/${blog.id}`);
+    response.redirect(`blogs/${blog.slug}`);
   } catch (error) {
     console.log(error);
   }
